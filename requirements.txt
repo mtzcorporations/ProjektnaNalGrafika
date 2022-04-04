@@ -2,3 +2,5 @@ numpy
 PyQt5
 pyqtGraph
 PyOpenGl
+matplotlib
+Pillow
