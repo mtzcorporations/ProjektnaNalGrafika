@@ -20,7 +20,8 @@ g.scale(10, 10, 1)
 w.addItem(g)
 
 def get_color(U): #0 do 1
-    return [255*U,0,0,255*U] #RGBa
+    #U=U/np.max(U)
+    return [255*U,0,0,50*U] #RGBa
 
 def create3D(d2):
     volume=[]
@@ -29,10 +30,7 @@ def create3D(d2):
         for y in range(100):
             line=[]
             for x in range(100):
-                if(z==0):
-                    line.append(get_color(d2[y][x]))
-                else:
-                    line.append(get_color(0))
+                line.append(get_color(d2[z][y][x]))
             surface.append(line)
         volume.append(surface)
     return volume
@@ -44,30 +42,21 @@ def init(koncentracije):
         k=create3D(k)
         k=np.array(k)
         U.append(k)
-    show2D()
+    show()
 
-def show2D():
+def show():
     global v
 
     v = gl.GLVolumeItem(U[0])  # x,y,z, RGBa
-    v.translate(-50, -50, -100)
+   # v.translate(-50, -50, -100)
     w.addItem(v)
     ax = gl.GLAxisItem()
     w.addItem(ax)
-
-def show3D(d2):
-    v = gl.GLVolumeItem(d2)  #x,y,z, RGBa
-    v.translate(-50,-50,-100)
-    w.addItem(v)
-    ax = gl.GLAxisItem()
-    w.addItem(ax)
-
-
 
 index=1
 def update():
     global index
-    if(index==9):
+    if(index==len(U)):
         index=0
     v.setData(U[index])
     index+=1
