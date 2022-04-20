@@ -1,7 +1,6 @@
 import numpy as np
-import matplotlib.pyplot as plt
-from matplotlib import animation
-from matplotlib.animation import FuncAnimation
+#import matplotlib.pyplot as plt
+import vizualize3d as vz3D
 
 a = 2.8e-4
 b = 5e-3
@@ -31,9 +30,9 @@ def show_patterns(U, ax=None,iter=0):
               interpolation='bilinear',
               extent=[-1, 1, -1, 1])
     ax.set_axis_off()
-    fig.savefig(f'rd_{iter}.png')
+    #fig.savefig(f'rd_{iter}.png')
 
-fig, axes = plt.subplots(3, 3, figsize=(8, 8))
+#fig, axes = plt.subplots(3, 3, figsize=(8, 8))
 step_plot = n // 9
 # We simulate the PDE with the finite difference
 # method.
@@ -60,15 +59,17 @@ for i in range(n):
     # We plot the state of the system at
     # 9 different times.
     if i % step_plot == 0 and i < 9 * step_plot:
-        ax = axes.flat[i // step_plot]
-        show_patterns(U, ax=ax,iter=i)
-        ax.set_title(f'$t={i * dt:.2f}$')
+        #ax = axes.flat[i // step_plot]
+        #show_patterns(U, ax=ax,iter=i)
+        #ax.set_title(f'$t={i * dt:.2f}$')
+        vz3D.show2D(U)
+        break
     #u.append(U)
 
 
 
 
-fig, ax = plt.subplots(1, 1, figsize=(8, 8))
-show_patterns(U, ax=ax)
+#fig, ax = plt.subplots(1, 1, figsize=(8, 8))
+#show_patterns(U, ax=ax)
 #plt.show()
 #print(u)
