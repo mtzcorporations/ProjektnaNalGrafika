@@ -1,6 +1,6 @@
 import numpy as np
 #import matplotlib.pyplot as plt
-import vizualize3d as vz3D
+
 
 a = 2.8e-4
 b = 5e-3
@@ -36,7 +36,8 @@ def show_patterns(U, ax=None,iter=0):
 step_plot = n // 9
 # We simulate the PDE with the finite difference
 # method.
-#u=[]
+
+u=[]
 for i in range(n):
     # We compute the Laplacian of u and v.
     deltaU = laplacian(U)
@@ -59,14 +60,11 @@ for i in range(n):
     # We plot the state of the system at
     # 9 different times.
     if i % step_plot == 0 and i < 9 * step_plot:
-        #ax = axes.flat[i // step_plot]
-        #show_patterns(U, ax=ax,iter=i)
-        #ax.set_title(f'$t={i * dt:.2f}$')
-        vz3D.show2D(U)
-        break
-    #u.append(U)
+        u.append(np.copy(U))
 
-
+import vizualize3d as vz3D
+vz3D.init(u)
+vz3D.start()
 
 
 #fig, ax = plt.subplots(1, 1, figsize=(8, 8))

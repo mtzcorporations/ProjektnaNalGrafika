@@ -2,9 +2,12 @@ import pyqtgraph as pg
 import numpy as np
 import pyqtgraph.opengl as gl
 import pyqtgraph.examples
-#yqtgraph.examples.run()
+from PyQt5 import QtCore
 
+#pyqtgraph.examples.run()
 
+U=[]
+v=None
 
 app = pg.mkQApp("GLVolumeItem Example")
 w = gl.GLViewWidget()
@@ -34,21 +37,44 @@ def create3D(d2):
         volume.append(surface)
     return volume
 
-def show2D(d2):
-    d2=create3D(d2)
-    d2=np.array(d2)
-    v = gl.GLVolumeItem(d2)  # x,y,z, RGBa
+def init(koncentracije):
+    global U #koncentracije
+
+    for k in koncentracije:
+        k=create3D(k)
+        k=np.array(k)
+        U.append(k)
+    show2D()
+
+def show2D():
+    global v
+
+    v = gl.GLVolumeItem(U[0])  # x,y,z, RGBa
     v.translate(-50, -50, -100)
     w.addItem(v)
     ax = gl.GLAxisItem()
     w.addItem(ax)
-    pg.exec()
-    print("frame")
+
 def show3D(d2):
     v = gl.GLVolumeItem(d2)  #x,y,z, RGBa
     v.translate(-50,-50,-100)
     w.addItem(v)
     ax = gl.GLAxisItem()
     w.addItem(ax)
-    pg.exec()
 
+
+
+index=1
+def update():
+    global index
+    if(index==9):
+        index=0
+    v.setData(U[index])
+    index+=1
+
+
+timer = QtCore.QTimer()
+def start():
+    timer.timeout.connect(update)
+    timer.start(1000)
+    pg.exec()
