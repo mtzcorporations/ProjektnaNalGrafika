@@ -10,7 +10,9 @@ a = 2.8e-6
 b = 5e-5
 tau = .001
 k = -.00005
-EPSILON=1.5
+epsilon=1.5
+b1=5e-5
+b2=5e-5
 size = 100  # size of the 2D grid
 dx = 2. / size  # space step
 T = 9.0  # total time
@@ -37,9 +39,10 @@ def init_StateRand():
 
 
 U, V = init_StateRand()
+W=np.zeros([size, size, size])
 
 
-def laplacian(Z):  # sobel , ker je ta občutljiva na šum #pretvori v 3kotniški model-marching cubes
+def laplacian(Z):  # newtnova metoda laplacian
     Ztop = Z[1:-1, 0:-2, 1:-1]  # +y _,_,_
     Zleft = Z[1:-1, 1:-1, 0:-2]  # -x
     Zbottom = Z[1:-1, 2:, 1:-1]  # -y
@@ -57,6 +60,8 @@ def laplacian(Z):  # sobel , ker je ta občutljiva na šum #pretvori v 3kotnišk
 step_plot = n // 9
 # We simulate the PDE with the finite difference
 u = []
+w = []
+
 for i in range(n):
     # We compute the Laplacian of u and v.
     deltaU = laplacian(U)
@@ -65,10 +70,15 @@ for i in range(n):
     # We take the values of u and v inside the grid.
     Uc = U[1:-1, 1:-1, 1:-1]
     Vc = V[1:-1, 1:-1, 1:-1]
+    Wc = W[1:-1, 1:-1, 1:-1]
     # We update the variables.
     U[1:-1, 1:-1,1:-1], V[1:-1, 1:-1,1:-1] = \
-        Uc + dt * (a * deltaU + Uc + Uc  + Vc + k), \
-        Vc + dt * (b * deltaV + Uc + Vc) / tau
+        Uc + dt * (-Uc * (-deltaU)**(epsilon/2) + b*(a/b-Uc)-b1*Vc**2*Uc), \
+        Vc + dt * (-Vc * (-deltaV)**(epsilon/2) +b2*Vc+b1*Vc**2*Uc )
+   # print((b2*Vc).shape)
+    #print(Wc.shape)
+    W[1:-1, 1:-1, 1:-1]=Wc+b2*Vc
+    #print(W)
     # Neumann cododanditions: derivatives at the edges
     # are null.
     for Z in (U, V):
@@ -84,11 +94,12 @@ for i in range(n):
         break;
     # if i % step_plot == 0 and i < 9 * step_plot:
     u.append(np.copy(U))
+    w.append(np.copy(W))
     print(i)
 
 import vizualize3d as vz3D
 
-vz3D.init(u)
+vz3D.init(w)
 vz3D.start()
 
 # fig, ax = plt.subplots(1, 1, figsize=(8, 8))
