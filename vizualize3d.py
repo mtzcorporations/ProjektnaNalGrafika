@@ -21,9 +21,10 @@ w.addItem(g)
 
 def get_color(U): #0 do 1
     #U=U/np.max(U)
-    if (U>0.7):
+
+    if (U>0.5):
         return [255*U,0,0,50]
-    return [0,0,0,0] #RGBa
+    return [0,0,255*U,0] #RGBa
 
 def create3D(d2):
     volume=[]
