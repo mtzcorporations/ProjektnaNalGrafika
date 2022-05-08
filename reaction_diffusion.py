@@ -13,7 +13,7 @@ k = -.00005
 epsilon=1.5
 b1=5e-5
 b2=5e-5
-size = 200  # size of the 2D grid
+size = 100  # size of the 2D grid
 dx = 2. / size  # space step
 T = 9.0  # total time
 dt = .00005  # time step
@@ -106,7 +106,7 @@ for i in range(n):
         Z[-1, :, :] = Z[-2, :, :]
     # We plot the state of the system at
     # 9 different times.
-    if (i == 200):
+    if (i == 8000):
         break;
     # if i % step_plot == 0 and i < 9 * step_plot:
     u.append(np.copy(W))
