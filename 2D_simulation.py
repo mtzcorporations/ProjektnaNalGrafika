@@ -18,9 +18,13 @@ U = np.ones([size, size])
 #V=np.zeros([size, size])
 #V[30:40,25:31]=1
 #U = np.random.rand(size, size)
-V = np.random.rand(size, size)
-V[V>0.5]=1
-V[V<=0.5]=0
+V = np.zeros([size,size])
+
+V[0:10,0:10]=1
+V[75:83,0:10]=1
+V[60:68,0:10]=1
+V[50:55,0:10]=1
+V[30:40,0:10]=1
 
 def laplacian(Z):
     Ztop = Z[0:-2, 1:-1]
@@ -45,11 +49,14 @@ step_plot = n // 200
 def equation1(Uc,Vc,deltaU,deltaV):
     return Uc + dt * (a * deltaU + Uc - Uc ** 3 - Vc + k), Vc + dt * (b * deltaV + Uc - Vc) / tau
 def equation2(A,B,deltaU,deltaV):
-    Da=1
-    Db=0.5
-    f=0.55
-    k=0.62
-    return A+(Da*deltaU*A-A*B**2+f)*dt,B+(Db*deltaU*B+A*B**2-(k+f)*B)*dt
+    y=1.6
+    alfa=5.2
+    lmb=2.5
+    return -A*(-deltaU**(y/2)+1-A-alfa**2*A*B**2),-B*(-deltaV**(y/2)-lmb*B-alfa**2*A*B**2)
+def equation3(A,B,deltaU,deltaV):
+
+    lmb=0.05
+    return lmb*deltaU
 u=[]
 print("zacetek",n)
 for i in range(n):
@@ -60,7 +67,7 @@ for i in range(n):
     Uc = U[1:-1, 1:-1]
     Vc = V[1:-1, 1:-1]
     # We update the variables.
-    U[1:-1, 1:-1], V[1:-1, 1:-1] = equation1(Uc,Vc,deltaU,deltaV)
+    U[1:-1, 1:-1], V[1:-1, 1:-1] = equation2(Uc,Vc,deltaU,deltaV)
     # Neumann conditions: derivatives at the edges
     # are null.
     for Z in (U, V):
@@ -207,7 +214,7 @@ class Window(QMainWindow):
         # method to update the data of image
         def updateData():
             ## Display the data
-            self.img.setImage(np.array(self.data[199]))
+            self.img.setImage(np.array(self.data[self.i]))
             #x=self.data[self.i]
             # creating new value of i
             self.i += 1
