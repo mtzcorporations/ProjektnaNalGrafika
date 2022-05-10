@@ -1,10 +1,11 @@
 
-# import matplotlib.pyplot as plt
-from math import *
-# import matplotlib.pyplot as plt
-from math import *
 
+from math import *
+import timeit
+start = timeit.default_timer()
 import numpy as np
+import vizualize3d as vz3D
+import random
 
 a = 2.8e-6
 b = 5e-5
@@ -12,7 +13,7 @@ tau = .001
 k = -.00005
 epsilon=1.5
 b1=5e-5
-b2=5e-5
+
 size = 100  # size of the 2D grid
 dx = 2. / size  # space step
 T = 9.0  # total time
@@ -42,16 +43,21 @@ def init(n):
 
     x, y,z = np.meshgrid(np.linspace(0, 1, n), np.linspace(0, 1, n),np.linspace(0,1,n))
 
-    mask = (0.4 < x) & (x < 0.6) & (0.4 < y) & (y < 0.6) & (0.4 < z) & (z < 0.6)
+    mask = (x**2 + y**2 + z**2 > 0.4) & (x**2 + y**2+z**2 < 0.45) & (z > 0) & (z< 0.3)
+    mask2=np.copy(mask)
 
     u[mask] = 0.50
-    v[mask] = 0.25
+    v[mask2] = 0.25
+    #v[-100:-50, :, :] = 0
+    #u[-100:-80, -100:20, -80:-60] = 0
     return u,v
 
-#U, V = init_StateRand()
+
 U,V=init(size)
+#W=np.copy(V)
 W=np.zeros([size, size, size])
-#W[0:10,20:30,40:50]=1
+
+
 
 def laplacian(Z):  # newtnova metoda laplacian
     Ztop = Z[1:-1, 0:-2, 1:-1]  # +y _,_,_
@@ -67,55 +73,58 @@ def laplacian(Z):  # newtnova metoda laplacian
     except:
         print("test")
 
-import random
-step_plot = n // 9
-# We simulate the PDE with the finite difference
-u = []
-w = []
 
-Du, Dv = .1, .05
-F, k = 0.0545, 0.062
 
-for i in range(n):
-    # We compute the Laplacian of u and v.
-    deltaU = laplacian(U)
-    deltaV = laplacian(V)
+def runSimulation(U,V,W):
+    u = []
+    Du, Dv = .1, .05
+    F, k = 0.0545, 0.062
+    n=1000
+    for i in range(n):
 
-    # We take the values of u and v inside the grid.
-    Uc = U[1:-1, 1:-1, 1:-1]
-    Vc = V[1:-1, 1:-1, 1:-1]
-    Wc = W[1:-1, 1:-1, 1:-1]
-    # We update the variables.
-    uvv = Uc * Vc * Vc
-    U[1:-1, 1:-1,1:-1], V[1:-1, 1:-1,1:-1] = Uc+ Du * deltaU - uvv + F * (1 - Uc),Vc + Dv * deltaV + uvv - (F + k) * Vc
+        deltaU = laplacian(U)
+        deltaV = laplacian(V)
 
-    #    Uc + dt * (-Uc * (-deltaU)**(epsilon/2) + b*(a/b-Uc)-b1*Vc**2*Uc), \
-    #    Vc + dt * (-Vc * (-deltaV)**(epsilon/2) +b2*Vc+b1*Vc**2*Uc )
-   # print((b2*Vc).shape)
-    #print(Wc.shape)
-    W[1:-1, 1:-1, 1:-1]=Wc+b2*Vc+0.1*random.random()*Vc
-    #print(W)
-    # Neumann cododanditions: derivatives at the edges
-    # are null.
-    for Z in (U, V,W):
-        Z[:, 0, :] = Z[:, 1, :]
-        Z[:, -1, :] = Z[:, -2, :]
-        Z[:, :, 0] = Z[:, :, 1]
-        Z[:, :, -1] = Z[:, :, -2]
-        Z[0, :, :] = Z[1, :, :]
-        Z[-1, :, :] = Z[-2, :, :]
-    # We plot the state of the system at
-    # 9 different times.
-    if (i == 8000):
-        break;
-    # if i % step_plot == 0 and i < 9 * step_plot:
-    u.append(np.copy(W))
-    #w.append(np.copy(W))
-    print(i)
 
-import vizualize3d as vz3D
-u=u[-3:-1]
-print(len(u))
+        Uc = U[1:-1, 1:-1, 1:-1]
+        Vc = V[1:-1, 1:-1, 1:-1]
+        Wc = W[1:-1, 1:-1, 1:-1]
+        #  update the variables.
+        uvv = Uc * Vc * Vc
+        U[1:-1, 1:-1,1:-1], V[1:-1, 1:-1,1:-1] = Uc+ Du * deltaU - uvv + F * (1 - Uc),Vc + Dv * deltaV + uvv - (F + k) * Vc
+        #F=F+0.00017
+        #k=k+0.00013
+        #    Uc + dt * (-Uc * (-deltaU)**(epsilon/2) + b*(a/b-Uc)-b1*Vc**2*Uc), \
+        #    Vc + dt * (-Vc * (-deltaV)**(epsilon/2) +b2*Vc+b1*Vc**2*Uc )
+       # print((b2*Vc).shape)
+        #print(Wc.shape)
+        W[1:-1, 1:-1, 1:-1]=Wc+Vc #0.1*random.random()*Vc
+        #print(W)
+        # Neumann cododanditions: derivatives at the edges
+        # are null.
+        for Z in (U, V,W):
+            Z[:, 0, :] = Z[:, 1, :]
+            Z[:, -1, :] = Z[:, -2, :]
+            Z[:, :, 0] = Z[:, :, 1]
+            Z[:, :, -1] = Z[:, :, -2]
+            Z[0, :, :] = Z[1, :, :]
+            Z[-1, :, :] = Z[-2, :, :]
+        # We plot the state of the system at
+        if(i%20==0):
+            u.append(np.copy(W))
+        # 9 different times.
+        if (i == n-1):
+            u.append(np.copy(W))
+            break;
+        # if i % step_plot == 0 and i < 9 * step_plot:
+
+        format_float = "{:.2f}".format(i / n * 100)
+        print(format_float, "%")
+    return u
+
+u=runSimulation(U,V,W)
+stop = timeit.default_timer()
+print('Time: ', stop - start)
 vz3D.init(u)
 vz3D.start()
 

@@ -4,3 +4,4 @@ pyqtGraph
 PyOpenGl
 matplotlib
 Pillow
+numba

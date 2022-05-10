@@ -7,7 +7,7 @@ def init(n):
 
     x, y = np.meshgrid(np.linspace(0, 1, n + 2), np.linspace(0, 1, n + 2))
 
-    mask = (0.4 < x) & (x < 0.6) & (0.4 < y) & (y < 0.6)
+    mask = (x**2 + y**2 > 0.4) & (x**2 + y**2 < 0.45) & (0.2 < y) & (y < 0.6)
 
     u[mask] = 0.50
     v[mask] = 0.25
@@ -59,7 +59,7 @@ def run():
     for i in range(n):
         # We compute the Laplacian of u and v.
         U,V=grayscott(U,V ,Du, Dv, F, k)
-        V+=V*random.random()*0.003
+        #V+=V*random.random()*0.003
     V_scaled = np.uint8(255 * (V - V.min()) / (V.max() - V.min()))
     return V_scaled
 def frames(n):
