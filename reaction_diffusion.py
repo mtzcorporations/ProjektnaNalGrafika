@@ -7,18 +7,7 @@ import numpy as np
 import vizualize3d as vz3D
 import random
 
-a = 2.8e-6
-b = 5e-5
-tau = .001
-k = -.00005
-epsilon=1.5
-b1=5e-5
-
-size = 100  # size of the 2D grid
-dx = 2. / size  # space step
-T = 9.0  # total time
-dt = .00005  # time step
-n = int(T / dt)  # number of iterations
+size =100
 
 
 def init_StateRand():
