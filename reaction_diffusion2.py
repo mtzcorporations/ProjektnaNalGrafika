@@ -13,9 +13,10 @@ T = 9.0  # total time
 dt = .00005  # time step
 n = int(T / dt)  # number of iterations
 
-U = np.random.rand(size, size,size)
-V = np.random.rand(size, size,size)
-
+U = np.zeros((size, size,size)) #random.rand(size, size,size)
+U[80:85,60:80,90:100]=np.random.rand(20, 20,40)
+V =  np.zeros((size, size,size))   #np.random.rand(size, size,size)
+V[50:60,50:70,90:100]=np.random.rand(10, 20,10)
 def laplacian(Z): #sobel , ker je ta občutljiva na šum #pretvori v 3kotniški model-marching cubes
     Ztop =    Z[1:-1,0:-2, 1:-1] # +y _,_,_
     Zleft =   Z[1:-1,1:-1, 0:-2] # -x
@@ -25,7 +26,7 @@ def laplacian(Z): #sobel , ker je ta občutljiva na šum #pretvori v 3kotniški 
     Zup =     Z[0:-2,1:-1,1:-1] # +z
     Zdown =   Z[2:  ,1:-1,1:-1] # -z
     try:
-        return (Ztop + Zleft + Zbottom + Zright + Zup + Zdown -
+        return (1.3*Ztop + 1.4*Zleft + Zbottom + Zright + Zup + Zdown -
             6 * Zcenter) / dx ** 3
     except:
         print("test")
@@ -61,7 +62,7 @@ for i in range(n):
     if (i == 20):
         break;
     #if i % step_plot == 0 and i < 9 * step_plot:
-    u.append(np.copy(U))
+    u.append(np.copy(V))
     print(i)
 
 import vizualize3d as vz3D
